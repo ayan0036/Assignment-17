@@ -1,0 +1,268 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Smart Login/Register</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #eef2f3, #8e9eab);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      transition: all 0.3s ease;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    input {
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    input:focus { border-color: #5e81ac; outline: none; }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .checkbox-row input {
+      width: auto;
+      margin-right: 8px;
+    }
+    button {
+      padding: 10px;
+      background-color: #5e81ac;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    button:hover { background-color: #4c6c8a; }
+    p {
+      text-align: center;
+      font-size: 14px;
+    }
+    .link {
+      display: inline-block;
+      margin-top: 10px;
+      color: #5e81ac;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .link:hover { text-decoration: underline; }
+    .message {
+      font-weight: bold;
+      text-align: center;
+      margin-top: 10px;
+    }
+    .hidden { display: none; }
+    #welcomeMessage {
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .center { text-align: center; }
+    .subtext {
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Register Page -->
+    <div id="registerPage">
+      <h2>Register</h2>
+      <form id="registerForm">
+        <input type="text" id="regName" placeholder="Enter Name" required />
+        <input type="text" id="regUsername" placeholder="Enter Username" required />
+        <input type="password" id="regPassword" placeholder="Enter Password (min 6 chars)" required />
+        <div class="checkbox-row">
+          <input type="checkbox" id="regShowPassword" />
+          <label for="regShowPassword">Show Password</label>
+        </div>
+        <button type="submit">Register</button>
+      </form>
+      <p id="regMsg" class="message"></p>
+      <p><a href="#" class="link" onclick="showPage('loginPage')">Already have an account? Login</a></p>
+    </div>
+
+    <!-- Login Page -->
+    <div id="loginPage" class="hidden">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <input type="text" id="loginUsername" placeholder="Enter Username" required />
+        <input type="password" id="loginPassword" placeholder="Enter Password" required />
+        <div class="checkbox-row">
+          <input type="checkbox" id="loginShowPassword" />
+          <label for="loginShowPassword">Show Password</label>
+        </div>
+        <button type="submit">Login</button>
+      </form>
+      <p id="loginMsg" class="message"></p>
+      <p><a href="#" class="link" onclick="showPage('registerPage')">Don't have an account? Register</a></p>
+    </div>
+
+    <!-- Welcome Page -->
+    <div id="welcomePage" class="hidden">
+      <h2 id="welcomeMessage">Welcome</h2>
+      <p class="subtext" id="lastLoginText"></p>
+      <div class="center">
+        <button id="logoutBtn">Logout</button>
+        <button id="deleteBtn" style="margin-top: 10px; background-color: #e74c3c;">Delete Account</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function showPage(pageId) {
+      ["registerPage", "loginPage", "welcomePage"].forEach(id =>
+        document.getElementById(id).classList.add("hidden")
+      );
+      document.getElementById(pageId).classList.remove("hidden");
+    }
+
+    function getUsers() {
+      return JSON.parse(localStorage.getItem("users")) || [];
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+
+    function getLastLogin(username) {
+      const logins = JSON.parse(localStorage.getItem("lastLogins")) || {};
+      return logins[username];
+    }
+
+    function setLastLogin(username) {
+      const logins = JSON.parse(localStorage.getItem("lastLogins")) || {};
+      logins[username] = new Date().toLocaleString();
+      localStorage.setItem("lastLogins", JSON.stringify(logins));
+    }
+
+    // Page load
+    const loggedInUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
+    if (loggedInUser) {
+      showPage("welcomePage");
+      document.getElementById("welcomeMessage").textContent = `Welcome, ${loggedInUser.name}`;
+      const last = getLastLogin(loggedInUser.username);
+      document.getElementById("lastLoginText").textContent = last ? `Last login: ${last}` : "";
+    } else {
+      showPage("loginPage");
+    }
+
+    // Show/hide passwords
+    document.getElementById("regShowPassword").onchange = () => {
+      const pwd = document.getElementById("regPassword");
+      pwd.type = pwd.type === "password" ? "text" : "password";
+    };
+
+    document.getElementById("loginShowPassword").onchange = () => {
+      const pwd = document.getElementById("loginPassword");
+      pwd.type = pwd.type === "password" ? "text" : "password";
+    };
+
+    // Register
+    document.getElementById("registerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const name = document.getElementById("regName").value.trim();
+      const username = document.getElementById("regUsername").value.trim().toLowerCase();
+      const password = document.getElementById("regPassword").value.trim().toLowerCase();
+      const regMsg = document.getElementById("regMsg");
+
+      if (password.length < 6) {
+        regMsg.textContent = "❌ Password must be at least 6 characters.";
+        regMsg.style.color = "red";
+        return;
+      }
+
+      const users = getUsers();
+      if (users.some(u => u.username === username)) {
+        regMsg.textContent = "❌ Username already taken.";
+        regMsg.style.color = "red";
+        return;
+      }
+
+      users.push({ name, username, password });
+      saveUsers(users);
+      regMsg.textContent = "✅ Registered successfully!";
+      regMsg.style.color = "green";
+      showPage("loginPage");
+    });
+
+    // Login
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const username = document.getElementById("loginUsername").value.trim().toLowerCase();
+      const password = document.getElementById("loginPassword").value.trim().toLowerCase();
+      const loginMsg = document.getElementById("loginMsg");
+      const users = getUsers();
+
+      const user = users.find(u => u.username === username && u.password === password);
+      if (!user) {
+        loginMsg.textContent = "❌ Invalid username or password.";
+        loginMsg.style.color = "red";
+        return;
+      }
+
+      sessionStorage.setItem("loggedInUser", JSON.stringify(user));
+      setLastLogin(user.username);
+      document.getElementById("welcomeMessage").textContent = `Welcome, ${user.name}`;
+      const last = getLastLogin(user.username);
+      document.getElementById("lastLoginText").textContent = last ? `Last login: ${last}` : "";
+      showPage("welcomePage");
+    });
+
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", function () {
+      sessionStorage.removeItem("loggedInUser");
+      showPage("loginPage");
+    });
+
+    // Delete Account
+    document.getElementById("deleteBtn").addEventListener("click", function () {
+      const user = JSON.parse(sessionStorage.getItem("loggedInUser"));
+      if (user && confirm("Are you sure you want to delete your account?")) {
+        const users = getUsers().filter(u => u.username !== user.username);
+        saveUsers(users);
+        sessionStorage.removeItem("loggedInUser");
+        showPage("registerPage");
+      }
+    });
+  </script>
+
+</body>
+</html>
