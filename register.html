@@ -1,0 +1,28 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Register</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div id="registerPage">
+      <h2>Register</h2>
+      <form id="registerForm">
+        <input type="text" id="regName" placeholder="Enter Name" required />
+        <input type="text" id="regUsername" placeholder="Enter Username" required />
+        <input type="password" id="regPassword" placeholder="Enter Password (min 6 chars)" required />
+        <div class="checkbox-row">
+          <input type="checkbox" id="regShowPassword" />
+          <label for="regShowPassword">Show Password</label>
+        </div>
+        <button type="submit">Register</button>
+      </form>
+      <p id="regMsg" class="message"></p>
+      <p><a class="link" href="login.html">Already have an account? Login</a></p>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
