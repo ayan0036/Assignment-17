@@ -1,0 +1,27 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div id="loginPage">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <input type="text" id="loginUsername" placeholder="Enter Username" required />
+        <input type="password" id="loginPassword" placeholder="Enter Password" required />
+        <div class="checkbox-row">
+          <input type="checkbox" id="loginShowPassword" />
+          <label for="loginShowPassword">Show Password</label>
+        </div>
+        <button type="submit">Login</button>
+      </form>
+      <p id="loginMsg" class="message"></p>
+      <p><a class="link" href="register.html">Don't have an account? Register</a></p>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
